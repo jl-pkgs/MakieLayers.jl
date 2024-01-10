@@ -1,7 +1,7 @@
 using Test
 using Dates
 using MakieLayers
-using GLMakie
+using CairoMakie
 
 @testset "dateseries" begin
   ## good job, test passed
