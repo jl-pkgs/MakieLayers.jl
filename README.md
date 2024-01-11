@@ -14,3 +14,8 @@ using Pkg
 Pkg.add(url="https://github.com/jl-pkgs/MakieLayers.jl")
 # ] add https://github.com/jl-pkgs/MakieLayers.jl
 ```
+
+
+# Functions
+
+- `ncl_colors`: 270 NCL colors
