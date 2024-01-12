@@ -31,4 +31,10 @@ end
 
 @testset "imagesc" begin
   @test_nowarn imagesc(rand(10, 10))
+  @test_nowarn imagesc(rand(10, 10, 4))
+end
+
+@testset "ncl" begin
+  @test_nowarn ncl_colors
+  @test_nowarn ncl_group
 end
