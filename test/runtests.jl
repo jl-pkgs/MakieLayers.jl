@@ -37,4 +37,7 @@ end
 @testset "ncl" begin
   @test_nowarn ncl_colors
   @test_nowarn ncl_group
+
+  cols = resample_colors(amwg256, 10)
+  @test length(cols) == 10
 end
