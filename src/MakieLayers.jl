@@ -3,6 +3,7 @@ module MakieLayers
 using Makie
 import Makie: automatic
 
+export automatic
 export map_on_keyboard, map_on_mouse
 export my_theme!
 
