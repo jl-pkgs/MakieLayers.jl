@@ -31,16 +31,22 @@ end
 # for 3d array
 function imagesc!(fig, x, y, z::AbstractArray{<:Real,3};
   colorrange=automatic,
+  layout=nothing,
   titles=nothing, colors=:viridis, gap=10, kw...)
 
   n = size(z, 3)
-  ncol = ceil(Int, sqrt(n))
-  nrow = ceil(Int, n * 1.0 / ncol)
-  titles === nothing && (titles = fill("", n))
+  if layout === nothing
+    ncol = ceil(Int, sqrt(n))
+    nrow = ceil(Int, n * 1.0 / ncol)
+  else
+    nrow,ncol = layout[1:2]
+  end
 
+  titles === nothing && (titles = fill("", n))
   k = 0
   for i = 1:nrow, j = 1:ncol
     k += 1
+    k > n && break
 
     title = titles[k]
     _z = z[:, :, k]
