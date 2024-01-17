@@ -2,13 +2,18 @@
 """
     imagesc!(f, x, args...;
         colorrange=automatic, col_rev=false, colors=:viridis,
-        title="Plot", kw...)
+        title="Plot", fact=nothing, kw...)
     imagesc!(f, z; kw...)
 
     imagesc(x, y, z; kw...)
     imagesc(z; kw...)
 
 Heatmap with colorbar
+
+# Arguments
+- `fact`: this is used to reduce the number of points to be plotted. If `fact`
+  is `nothing`, all points are plotted. If `fact=n`, only every `n`th point
+  is plotted.
 
 # Examples
 ```julia
@@ -17,12 +22,18 @@ imagesc(rand(10, 10))
 """
 function imagesc!(f, x, y, z::AbstractArray{<:Real,2};
   colorrange=automatic, col_rev=false, colors=:viridis,
-  title="Plot", kw...)
+  title="Plot", fact=nothing, kw...)
 
   col_rev && (colors = reverse(colors))
-  
+
   ax = Axis(f[1, 1]; title)
-  plt = heatmap!(ax, x, y, z; colorrange, colormap=colors, kw...)
+  if fact === nothing
+    plt = heatmap!(ax, x, y, z; colorrange, colormap=colors, kw...)
+  else
+    _z = @view z[1:fact:end, 1:fact:end]
+    plt = heatmap!(ax, x[1:fact:end], y[1:fact:end], _z; 
+      colorrange, colormap=colors, kw...)
+  end
   Colorbar(f[1, 2], plt)
   ax, plt
 end
@@ -39,7 +50,7 @@ function imagesc!(fig, x, y, z::AbstractArray{<:Real,3};
     ncol = ceil(Int, sqrt(n))
     nrow = ceil(Int, n * 1.0 / ncol)
   else
-    nrow,ncol = layout[1:2]
+    nrow, ncol = layout[1:2]
   end
 
   titles === nothing && (titles = fill("", n))
