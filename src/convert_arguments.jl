@@ -4,18 +4,18 @@ using Dates
 import Makie: replace_missing, convert_arguments, convert_single_argument,
   get_ticks, Automatic
 
-Makie.convert_single_argument(dates::AbstractVector{DateTime}) = date2num.(dates)
-Makie.convert_single_argument(date::DateTime) = date2num(date) |> Float32
+Makie.convert_single_argument(dates::AbstractVector{<:TypeDate}) = date2num.(dates)
+Makie.convert_single_argument(date::TypeDate) = date2num(date) |> Float32
 
 function Makie.convert_arguments(T::PointBased,
-  x::Union{DateTime,AbstractVector{DateTime}}, args...)
+  x::Union{TypeDate,AbstractVector{<:TypeDate}}, args...)
 
   x = convert_single_argument(x)
   args = convert_single_argument.(args)
   convert_arguments(T, x, args...)
 end
 
-function Makie.convert_arguments(T::Type{<:Series}, x::AbstractVector{DateTime}, y::AbstractMatrix)
+function Makie.convert_arguments(T::Type{<:Series}, x::AbstractVector{<:TypeDate}, y::AbstractMatrix)
   x = convert_single_argument(x)
   convert_arguments(T, x, y)
 end

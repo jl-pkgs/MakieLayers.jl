@@ -35,7 +35,7 @@ function Makie.get_plots(plot::DateSeries)
 end
 
 
-function dateseries!(ax, t::Observable{<:AbstractVector{DateTime}}, y; 
+function dateseries!(ax, t::Observable{<:AbstractVector{<:TypeDate}}, y;
   date_format = "mm/dd", kw...)
 
   x = @lift date2num.($t)
