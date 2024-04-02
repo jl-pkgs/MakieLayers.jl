@@ -20,9 +20,9 @@ Heatmap with colorbar
 imagesc(rand(10, 10))
 ```
 """
-function imagesc!(f, x, y, z::AbstractArray{<:Real,2};
+function imagesc!(f, x, y, z::Union{R,Observable{R}};
   colorrange=automatic, col_rev=false, colors=:viridis,
-  title="Plot", fact=nothing, kw...)
+  title="Plot", fact=nothing, kw...) where {R<:AbstractArray{<:Real,2}}
 
   col_rev && (colors = reverse(colors))
 
@@ -30,20 +30,24 @@ function imagesc!(f, x, y, z::AbstractArray{<:Real,2};
   if fact === nothing
     plt = heatmap!(ax, x, y, z; colorrange, colormap=colors, kw...)
   else
-    _z = @view z[1:fact:end, 1:fact:end]
-    plt = heatmap!(ax, x[1:fact:end], y[1:fact:end], _z; 
+    if isa(z, Observable)
+      _z = @lift $z[1:fact:end, 1:fact:end]
+    else
+      _z = @view z[1:fact:end, 1:fact:end]
+    end
+
+    plt = heatmap!(ax, x[1:fact:end], y[1:fact:end], _z;
       colorrange, colormap=colors, kw...)
   end
   Colorbar(f[1, 2], plt)
   ax, plt
 end
 
-
 # for 3d array
-function imagesc!(fig, x, y, z::AbstractArray{<:Real,3};
+function imagesc!(fig, x, y, z::Union{R,Observable{R}};
   colorrange=automatic,
   layout=nothing,
-  titles=nothing, colors=:viridis, gap=10, kw...)
+  titles=nothing, colors=:viridis, gap=10, kw...) where {R<:AbstractArray{<:Real,3}}
 
   n = size(z, 3)
   if layout === nothing
@@ -60,7 +64,11 @@ function imagesc!(fig, x, y, z::AbstractArray{<:Real,3};
     k > n && break
 
     title = titles[k]
-    _z = z[:, :, k]
+    if isa(z, Observable)
+      _z = @lift $z[:, :, k]
+    else
+      _z = z[:, :, k]
+    end
     imagesc!(fig[i, j], x, y, _z;
       title, colorrange, colors, kw...)
   end
