@@ -20,13 +20,12 @@ Heatmap with colorbar
 imagesc(rand(10, 10))
 ```
 """
-function imagesc!(f, x, y, z::Union{R,Observable{R}};
+function imagesc!(ax::Axis, x, y, z::Union{R,Observable{R}};
   colorrange=automatic, col_rev=false, colors=:viridis,
-  title="Plot", fact=nothing, kw...) where {R<:AbstractArray{<:Real,2}}
-
+  fact=nothing, kw...) where {R<:AbstractArray{<:Real,2}}
+  
   col_rev && (colors = reverse(colors))
 
-  ax = Axis(f[1, 1]; title)
   if fact === nothing
     plt = heatmap!(ax, x, y, z; colorrange, colormap=colors, kw...)
   else
@@ -39,12 +38,22 @@ function imagesc!(f, x, y, z::Union{R,Observable{R}};
     plt = heatmap!(ax, x[1:fact:end], y[1:fact:end], _z;
       colorrange, colormap=colors, kw...)
   end
-  Colorbar(f[1, 2], plt)
+  plt
+end
+
+function imagesc!(fig::Union{Figure,GridPosition}, 
+  x, y, z::Union{R,Observable{R}};
+  title="Plot", kw...) where {R<:AbstractArray{<:Real,2}}
+
+  ax = Axis(fig[1, 1]; title)
+  plt = imagesc!(ax, x, y, z; kw...)
+  Colorbar(fig[1, 2], plt)
   ax, plt
 end
 
 # for 3d array
-function imagesc!(fig, x, y, z::Union{R,Observable{R}};
+function imagesc!(fig::Union{Figure,GridPosition}, 
+  x, y, z::Union{R,Observable{R}};
   colorrange=automatic,
   layout=nothing,
   titles=nothing, colors=:viridis, gap=10, kw...) where {R<:AbstractArray{<:Real,3}}

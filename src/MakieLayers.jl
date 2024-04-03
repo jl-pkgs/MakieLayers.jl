@@ -15,5 +15,6 @@ include("Layers/Layers.jl")
 include("events.jl")
 include("colormap.jl")
 include("theme.jl")
+include("Shapefile.jl")
 
 end # module MakieLayers

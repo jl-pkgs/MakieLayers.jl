@@ -15,6 +15,7 @@ Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 Colors = "0.12"
 ColorSchemes = "3"
 Makie = "0.20, 0.21"
+Shapefile = "0.12"
 PlotUtils = "1"
 julia = "1.9, 1.10"
 
@@ -24,3 +25,9 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "CairoMakie"]
+
+[extensions]
+MakieLayersShapefileExt = "Shapefile"
+
+[weakdeps]
+Shapefile = "8e980c4a-a4fe-5da2-b3a7-4b4b0353a2f4"

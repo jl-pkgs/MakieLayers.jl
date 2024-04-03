@@ -1,4 +1,5 @@
 export ncl_colors, ncl_group, amwg256
+export nan_color
 export resample_colors
 
 
@@ -6,6 +7,7 @@ using Serialization: serialize, deserialize
 using Colors
 using ColorSchemes
 
+nan_color = RGBA(1.0, 1.0, 1.0, 0.2)
 
 project_path(f...) = normpath(joinpath(@__DIR__, "..", f...))
 load(f) = deserialize(project_path(f))
