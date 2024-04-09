@@ -84,6 +84,7 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   titles === nothing && (titles = fill("", n))
   k = 0
   ax, plt = nothing, nothing
+  axs = []
   for i = 1:nrow, j = 1:ncol
     k += 1
     k > n && break
@@ -97,6 +98,7 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
     ax, plt = imagesc!(fig[i, j], x, y, _z;
       title, colorrange, force_show_legend, colors, kw...)
     (fun_axis!) !== nothing && fun_axis!(ax)
+    push!(axs, ax)
   end
 
   # unify the legend
@@ -104,7 +106,7 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
 
   rowgap!(fig.layout, gap)
   colgap!(fig.layout, gap)
-  fig
+  axs
 end
 
 function imagesc!(fig, z; kw...)
