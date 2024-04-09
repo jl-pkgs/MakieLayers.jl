@@ -14,6 +14,12 @@ Heatmap with colorbar
 - `fact`: this is used to reduce the number of points to be plotted. If `fact`
   is `nothing`, all points are plotted. If `fact=n`, only every `n`th point
   is plotted.
+- `colorrange`: the range of the colorbar. If `colorrange` is `automatic`, the
+  range is determined by the minimum and maximum values of `z`. If `colorrange`
+  is a tuple `(vmin, vmax)`, the range is set to `[vmin, vmax]`.
+- `force_show_legend`: if `true`, the colorbar is always shown.
+- `col_rev`: if `true`, the colormap is reversed.
+- `colors`: the colormap. It can be a string or a vector of colors.
 
 # Examples
 ```julia
@@ -43,18 +49,21 @@ end
 
 function imagesc!(fig::Union{Figure,GridPosition}, 
   x, y, z::Union{R,Observable{R}};
-  title="Plot", kw...) where {R<:AbstractArray{<:Real,2}}
+  title="Plot", 
+  force_show_legend=false,
+  colorrange=automatic, kw...) where {R<:AbstractArray{<:Real,2}}
 
   ax = Axis(fig[1, 1]; title)
-  plt = imagesc!(ax, x, y, z; kw...)
-  Colorbar(fig[1, 2], plt)
+  plt = imagesc!(ax, x, y, z; colorrange, kw...)
+  
+  (colorrange == automatic || force_show_legend) && Colorbar(fig[1, 2], plt)
   ax, plt
 end
 
 # for 3d array
 function imagesc!(fig::Union{Figure,GridPosition}, 
   x, y, z::Union{R,Observable{R}};
-  colorrange=automatic,
+  colorrange=automatic, force_show_legend=false,
   layout=nothing,
   titles=nothing, colors=:viridis, gap=10, kw...) where {R<:AbstractArray{<:Real,3}}
 
@@ -68,6 +77,7 @@ function imagesc!(fig::Union{Figure,GridPosition},
 
   titles === nothing && (titles = fill("", n))
   k = 0
+  ax, plt = nothing, nothing
   for i = 1:nrow, j = 1:ncol
     k += 1
     k > n && break
@@ -78,9 +88,13 @@ function imagesc!(fig::Union{Figure,GridPosition},
     else
       _z = z[:, :, k]
     end
-    imagesc!(fig[i, j], x, y, _z;
-      title, colorrange, colors, kw...)
+    ax, plt = imagesc!(fig[i, j], x, y, _z;
+      title, colorrange, force_show_legend, colors, kw...)
   end
+  
+  # unify the legend
+  (colorrange != automatic && !force_show_legend) && Colorbar(fig[:, ncol+1], plt)
+  
   rowgap!(fig.layout, gap)
   colgap!(fig.layout, gap)
   fig
