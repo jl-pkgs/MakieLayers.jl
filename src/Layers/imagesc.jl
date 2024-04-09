@@ -51,7 +51,7 @@ function imagesc!(ax::Axis, x, y, z::Union{R,Observable{R}};
   plt
 end
 
-function imagesc!(fig::Union{Figure,GridPosition},
+function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   x, y, z::Union{R,Observable{R}};
   title="Plot",
   force_show_legend=false,
@@ -65,7 +65,7 @@ function imagesc!(fig::Union{Figure,GridPosition},
 end
 
 # for 3d array
-function imagesc!(fig::Union{Figure,GridPosition},
+function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   x, y, z::Union{R,Observable{R}};
   colorrange=automatic, force_show_legend=false,
   layout=nothing,
