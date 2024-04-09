@@ -1,4 +1,5 @@
-# heatmap with legend
+# TODO: add base maps foreach axis
+
 """
     imagesc!(f, x, args...;
         colorrange=automatic, col_rev=false, colors=:viridis,
@@ -20,6 +21,9 @@ Heatmap with colorbar
 - `force_show_legend`: if `true`, the colorbar is always shown.
 - `col_rev`: if `true`, the colormap is reversed.
 - `colors`: the colormap. It can be a string or a vector of colors.
+- `kw...`: other keyword arguments passed to `heatmap!`
+- `kw_axis`: other keyword arguments passed to `Axis`
+- `fun_axis` used to tidy axis
 
 # Examples
 ```julia
@@ -29,7 +33,7 @@ imagesc(rand(10, 10))
 function imagesc!(ax::Axis, x, y, z::Union{R,Observable{R}};
   colorrange=automatic, col_rev=false, colors=:viridis,
   fact=nothing, kw...) where {R<:AbstractArray{<:Real,2}}
-  
+
   col_rev && (colors = reverse(colors))
 
   if fact === nothing
@@ -47,25 +51,27 @@ function imagesc!(ax::Axis, x, y, z::Union{R,Observable{R}};
   plt
 end
 
-function imagesc!(fig::Union{Figure,GridPosition}, 
+function imagesc!(fig::Union{Figure,GridPosition},
   x, y, z::Union{R,Observable{R}};
-  title="Plot", 
+  title="Plot",
   force_show_legend=false,
-  colorrange=automatic, kw...) where {R<:AbstractArray{<:Real,2}}
+  colorrange=automatic, kw_axis=(;), kw...) where {R<:AbstractArray{<:Real,2}}
 
-  ax = Axis(fig[1, 1]; title)
+  ax = Axis(fig[1, 1]; title, kw_axis...)
   plt = imagesc!(ax, x, y, z; colorrange, kw...)
-  
+
   (colorrange == automatic || force_show_legend) && Colorbar(fig[1, 2], plt)
   ax, plt
 end
 
 # for 3d array
-function imagesc!(fig::Union{Figure,GridPosition}, 
+function imagesc!(fig::Union{Figure,GridPosition},
   x, y, z::Union{R,Observable{R}};
   colorrange=automatic, force_show_legend=false,
   layout=nothing,
-  titles=nothing, colors=:viridis, gap=10, kw...) where {R<:AbstractArray{<:Real,3}}
+  titles=nothing, colors=:viridis, gap=10,
+  (fun_axis!)=nothing,
+  kw...) where {R<:AbstractArray{<:Real,3}}
 
   n = size(z, 3)
   if layout === nothing
@@ -90,11 +96,12 @@ function imagesc!(fig::Union{Figure,GridPosition},
     end
     ax, plt = imagesc!(fig[i, j], x, y, _z;
       title, colorrange, force_show_legend, colors, kw...)
+    (fun_axis!) !== nothing && fun_axis!(ax)
   end
-  
+
   # unify the legend
   (colorrange != automatic && !force_show_legend) && Colorbar(fig[:, ncol+1], plt)
-  
+
   rowgap!(fig.layout, gap)
   colgap!(fig.layout, gap)
   fig
