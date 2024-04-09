@@ -73,6 +73,7 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   (fun_axis!)=nothing,
   kw...) where {R<:AbstractArray{<:Real,3}}
 
+  length(gap) == 1 && (gap = (gap, gap))
   n = size(z, 3)
   if layout === nothing
     ncol = ceil(Int, sqrt(n))
@@ -82,10 +83,10 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   end
 
   titles === nothing && (titles = fill("", n))
-  k = 0
-  # ax, plt = nothing, nothing
   axs = []
   plts = []
+  
+  k = 0
   for i = 1:nrow, j = 1:ncol
     k += 1
     k > n && break
@@ -102,22 +103,14 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
     push!(axs, ax)
     push!(plts, plt)
   end
-  
-  # update plot
-  if isa(z, Observable)
-    on(z) do z
-      for i = 1:n
-        plts[i][3] = z[:, :, i]
-      end
-    end
-  end
+  bind_z!(plts, z)
   
   # unify the legend
   (colorrange != automatic && !force_show_legend) && 
     Colorbar(fig[1:nrow, ncol+1], plts[1])
 
-  rowgap!(fig.layout, gap)
-  colgap!(fig.layout, gap)
+  rowgap!(fig.layout, gap[1])
+  colgap!(fig.layout, gap[2])
   axs, plts
 end
 

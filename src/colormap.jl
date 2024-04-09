@@ -7,7 +7,7 @@ using Serialization: serialize, deserialize
 using Colors
 using ColorSchemes
 
-nan_color = RGBA(1.0, 1.0, 1.0, 0.2)
+nan_color = RGBA(1.0, 1.0, 1.0, 0.0)
 
 project_path(f...) = normpath(joinpath(@__DIR__, "..", f...))
 load(f) = deserialize(project_path(f))
