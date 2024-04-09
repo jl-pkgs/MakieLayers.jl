@@ -10,6 +10,7 @@ export automatic
 export map_on_keyboard, map_on_mouse
 export my_theme!
 
+include("Base.jl")
 include("convert_arguments.jl")
 include("Layers/Layers.jl")
 include("events.jl")

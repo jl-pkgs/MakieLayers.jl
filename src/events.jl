@@ -1,19 +1,33 @@
 """
-    map_on_keyboard(fig, stime)
+  map_on_keyboard(fig, stime)
 """
-function map_on_keyboard(fig, stime)
+function map_on_keyboard_lr(fig, stime::Slider, Δ::Integer=1)
   on(events(fig).keyboardbutton) do event
-
     if event.action == Keyboard.press || event.action == Keyboard.repeat
       if event.key == Keyboard.right
-        stime[] += 1
+        set_close_to!(stime, stime.value[] + Δ)
       elseif event.key == Keyboard.left
-        stime[] -= 1
+        set_close_to!(stime, stime.value[] - Δ)
       end
     end
     return Consume(false)
   end
 end
+
+function map_on_keyboard_ud(fig, stime::Slider, Δ::Integer=1)
+  on(events(fig).keyboardbutton) do event
+    if event.action == Keyboard.press || event.action == Keyboard.repeat
+      if event.key == Keyboard.down
+        set_close_to!(stime, stime.value[] + Δ)
+      elseif event.key == Keyboard.up
+        set_close_to!(stime, stime.value[] - Δ)
+      end
+    end
+    return Consume(false)
+  end
+end
+
+map_on_keyboard = map_on_keyboard_lr
 
 # @show event.key
 # if event.key == Keyboard.up
@@ -54,3 +68,5 @@ function map_on_mouse(fig, ax, handle_plot, slon, slat)
   end
 end
 
+
+export map_on_keyboard_lr, map_on_keyboard_ud

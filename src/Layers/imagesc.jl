@@ -83,15 +83,16 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
 
   titles === nothing && (titles = fill("", n))
   k = 0
-  ax, plt = nothing, nothing
+  # ax, plt = nothing, nothing
   axs = []
+  plts = []
   for i = 1:nrow, j = 1:ncol
     k += 1
     k > n && break
 
     title = titles[k]
     if isa(z, Observable)
-      _z = @lift $z[:, :, k]
+      _z = z[][:, :, k]
     else
       _z = z[:, :, k]
     end
@@ -99,14 +100,25 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
       title, colorrange, force_show_legend, colors, kw...)
     (fun_axis!) !== nothing && fun_axis!(ax)
     push!(axs, ax)
+    push!(plts, plt)
   end
-
+  
+  # update plot
+  if isa(z, Observable)
+    on(z) do z
+      for i = 1:n
+        plts[i][3] = z[:, :, i]
+      end
+    end
+  end
+  
   # unify the legend
-  (colorrange != automatic && !force_show_legend) && Colorbar(fig[:, ncol+1], plt)
+  (colorrange != automatic && !force_show_legend) && 
+    Colorbar(fig[1:nrow, ncol+1], plts[1])
 
   rowgap!(fig.layout, gap)
   colgap!(fig.layout, gap)
-  axs
+  axs, plts
 end
 
 function imagesc!(fig, z; kw...)
