@@ -40,3 +40,9 @@ function add_labels!(axs::Vector, labels::Observable, x, y;
   end
   bind_text!(plts, labels)
 end
+
+function Base.size(fig::Figure)
+  m, n = collect(fig.scene.viewport[].widths)
+  println("size=($m, $n)")
+  # m, n
+end

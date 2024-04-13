@@ -103,6 +103,7 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
     push!(axs, ax)
     push!(plts, plt)
   end
+  linkaxes!(axs...)
   bind_z!(plts, z)
   
   # unify the legend
