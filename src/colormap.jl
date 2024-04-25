@@ -1,6 +1,6 @@
 export ncl_colors, ncl_group, amwg256
 export nan_color
-export resample_colors
+export resample_colors, set_mid_colors
 
 
 using Serialization: serialize, deserialize
@@ -41,4 +41,12 @@ end
 
 function Base.show(io::IO, x::typeof(ncl_group))
   println(keys(x))
+end
+
+function set_mid_colors(colors=amwg256; mid="grey90")
+  n = length(colors)
+  isa(mid, String) && (middle = parse(Colorant, mid))
+  colors[n÷2] = middle
+  colors[n÷2+1] = middle
+  colors
 end

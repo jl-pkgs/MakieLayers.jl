@@ -70,10 +70,10 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   colorrange=automatic, force_show_legend=false,
   layout=nothing,
   titles=nothing, colors=:viridis, gap=10,
-  (fun_axis!)=nothing,
+  fun_axis=nothing,
   kw...) where {R<:AbstractArray{<:Real,3}}
 
-  length(gap) == 1 && (gap = (gap, gap))
+  length(gap) == 1 && (gap = (gap, gap, 5))
   n = size(z, 3)
   if layout === nothing
     ncol = ceil(Int, sqrt(n))
@@ -99,19 +99,21 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
     end
     ax, plt = imagesc!(fig[i, j], x, y, _z;
       title, colorrange, force_show_legend, colors, kw...)
-    (fun_axis!) !== nothing && fun_axis!(ax)
+    fun_axis !== nothing && fun_axis(ax)
     push!(axs, ax)
     push!(plts, plt)
   end
   linkaxes!(axs...)
   bind_z!(plts, z)
   
-  # unify the legend
-  (colorrange != automatic && !force_show_legend) && 
-    Colorbar(fig[1:nrow, ncol+1], plts[1])
-
   rowgap!(fig.layout, gap[1])
   colgap!(fig.layout, gap[2])
+  
+  # unify the legend
+  if colorrange != automatic && !force_show_legend
+    Colorbar(fig[1:nrow, ncol+1], plts[1])
+    colgap!(fig.layout, ncol, gap[3])
+  end
   axs, plts
 end
 
