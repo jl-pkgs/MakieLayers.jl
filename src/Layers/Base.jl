@@ -60,8 +60,11 @@ function rm_ticks!(ax;)
 end
 
 
-function add_labels!(axs::Vector, labels::Observable, x, y;
-  fontsize=30, align=(:left, :top), offset=(10, -5))
+"""
+- space: `:relative` or `:data`
+"""
+function add_labels!(axs::Vector, labels::Observable, x = 0, y = 1;
+  fontsize=30, align=(-0.1, 1.1), space = :relative)
   plts = []
   for i in eachindex(axs)
     label = labels[][i]

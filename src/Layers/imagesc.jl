@@ -31,7 +31,7 @@ imagesc(rand(10, 10))
 ```
 """
 function imagesc!(ax::Axis, x, y, z::Union{R,Observable{R}};
-  colorrange=automatic, col_rev=false, colors=:viridis,
+  colorrange=automatic, col_rev=false, colors=amwg256,
   fact=nothing, kw...) where {R<:AbstractArray{<:Real,2}}
 
   col_rev && (colors = reverse(colors))
@@ -69,7 +69,9 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   x, y, z::Union{R,Observable{R}};
   colorrange=automatic, force_show_legend=false,
   layout=nothing,
-  titles=nothing, colors=:viridis, gap=10,
+  titles=nothing, colors=amwg256, gap=10,
+  kw_cbar=(;),
+  cbar_width=15,
   fun_axis=nothing,
   kw...) where {R<:AbstractArray{<:Real,3}}
 
@@ -85,7 +87,7 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   titles === nothing && (titles = fill("", n))
   axs = []
   plts = []
-  
+
   k = 0
   for i = 1:nrow, j = 1:ncol
     k += 1
@@ -105,16 +107,22 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   end
   linkaxes!(axs...)
   bind_z!(plts, z)
-  
+
   rowgap!(fig.layout, gap[1])
   colgap!(fig.layout, gap[2])
-  
+
   # unify the legend
   if colorrange != automatic && !force_show_legend
-    Colorbar(fig[1:nrow, ncol+1], plts[1])
-    colgap!(fig.layout, ncol, gap[3])
+    Colorbar(fig[1:nrow, ncol+1], plts[1]; width=cbar_width, kw_cbar...)
+    set_colgap(fig, ncol, gap[3])
   end
   axs, plts
+end
+
+set_colgap(fig::Figure, j, gap) = colgap!(fig.layout, j, gap)
+function set_colgap(fig::GridPosition, j, gap)
+  layout = fig.layout.content[1].content
+  colgap!(layout, j, gap)
 end
 
 function imagesc!(fig, z; kw...)
