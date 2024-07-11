@@ -73,6 +73,7 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   kw_cbar=(;),
   cbar_width=15,
   fun_axis=nothing,
+  byrow=false,
   kw...) where {R<:AbstractArray{<:Real,3}}
 
   length(gap) == 1 && (gap = (gap, gap, 5))
@@ -89,9 +90,15 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   plts = []
 
   k = 0
-  for i = 1:nrow, j = 1:ncol
+  inds = byrow ? CartesianIndices((1:ncol, 1:nrow)) : CartesianIndices((1:nrow, 1:ncol))  
+
+  for I in inds[1:n]
+    if byrow
+      i, j = I[2], I[1]
+    else
+      i, j = I[1], I[2]
+    end
     k += 1
-    k > n && break
 
     title = titles[k]
     if isa(z, Observable)
@@ -105,6 +112,7 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
     push!(axs, ax)
     push!(plts, plt)
   end
+
   linkaxes!(axs...)
   bind_z!(plts, z)
 

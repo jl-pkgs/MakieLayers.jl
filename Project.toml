@@ -1,7 +1,7 @@
 name = "MakieLayers"
 uuid = "154460a4-5f98-42d0-b270-e4f6a264d2f3"
 authors = ["Dongdong Kong <kongdd@users.noreply.github.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 ColorSchemes = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
