@@ -2,6 +2,13 @@ export gap!
 export bind_text!, bind_z!, add_labels!, text_rel!
 export rm_ticks!, non_label_ticks
 
+
+function Base.size(fig::Figure)
+  m, n = collect(fig.scene.viewport[].widths)
+  println("size=($m, $n)")
+  # m, n
+end
+
 Base.size(x::Observable) = size(x[])
 Base.size(x::Observable, i) = size(x[], i)
 
@@ -10,14 +17,6 @@ function gap!(fig, gap=0)
   colgap!(fig.layout, gap)
 end
 
-
-function bind_text!(plts::Vector, labels::Observable{Vector{String}})
-  on(labels) do labels
-    for i in eachindex(plts)
-      plts[i].text[] = labels[i]
-    end
-  end
-end
 
 # for not Observable
 bind_z!(plts, z) = nothing
@@ -30,11 +29,6 @@ function bind_z!(plts::Vector, z::Observable{<:AbstractArray{<:Real,3}})
   end
 end
 
-function Base.size(fig::Figure)
-  m, n = collect(fig.scene.viewport[].widths)
-  println("size=($m, $n)")
-  # m, n
-end
 
 non_label_ticks(ticks) = (ticks, ["" for i in ticks])
 
@@ -57,41 +51,4 @@ function rm_ticks!(ax;)
   # ax.ygridstyle = :dash
   # ax.ygridwidth = 0.6
   # add_basemap!(ax)
-end
-
-
-"""
-- space: `:relative` or `:data`
-"""
-function add_labels!(axs::Vector, labels::Observable, x = 0, y = 1;
-  fontsize=30, align=(-0.1, 1.1), space = :relative)
-  plts = []
-  for i in eachindex(axs)
-    label = labels[][i]
-    plt = text!(axs[i], x, y, text=label; fontsize, align, offset)
-    push!(plts, plt)
-  end
-  bind_text!(plts, labels)
-end
-
-"""
-  add relative labels to the axis
-"""
-function text_rel!(ax::Axis, label, x=0, y=1; align=(0, 1), kw...)
-  xlim = ax.xaxis.attributes.limits
-  ylim = ax.yaxis.attributes.limits
-
-  x2 = @lift ($xlim[2] - $xlim[1]) * x + $xlim[1]
-  y2 = @lift ($ylim[2] - $ylim[1]) * y + $ylim[1]
-
-  # @show x2, y2, label, xlim, ylim, x, y
-  text!(ax, x2, y2; text=label, align, kw...)
-end
-
-function text_rel!(axs::Vector, labels, args...; kw...)
-  for (i, ax) in enumerate(axs)
-    label = labels[i]
-    !isa(label, Observable) && (label = "$label")
-    text_rel!(ax, label, args...; kw...)
-  end
 end

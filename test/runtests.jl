@@ -40,6 +40,8 @@ end
 
   fig = Figure(; size = (800, 800))
   @test_nowarn imagesc!(fig, x, y, rand(10, 10, 4), colorrange=(0, 1), kw_cbar=(;width=45))
+  add_row_labels!(fig, ["(a)", "(b)"])
+  add_col_labels!(fig, ["1", "2"])
   fig
   save("test.png", fig)
 end
@@ -48,13 +50,12 @@ end
   x = 2:11
   y = 2:11
   fig = Figure(; size=(800, 800))
-  @test_nowarn imagesc!(fig[1:2, 1:2], x, y, rand(10, 10, 4); 
+  @test_nowarn imagesc!(fig[1:2, 1:2], x, y, rand(10, 10, 4);
     colorrange=(0, 1), gap=(0, 0, 25))
   fig
-
+  
   @test_nowarn imagesc(rand(4, 4, 12), layout=(4, 3), byrow=true)
 end
-
 
 @testset "ncl" begin
   @test_nowarn ncl_colors
