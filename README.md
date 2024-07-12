@@ -28,6 +28,7 @@ using GLMakie
 using MakieLayers
 using Ipaper
 
+set_seed(2)
 label_tag(xs) = map(x -> "($x)", xs)
 
 x = 2:11
@@ -42,13 +43,13 @@ axs, plts = imagesc!(fig, rand(4, 4, 12), layout=(4, 3), byrow=true,
 flags = letters.(1:16) |> label_tag
 add_texts!(axs, flags, fontsize=20, 0.02, 0.98, align=(0, 1))
 
-labels = ["Drought", "Flood", "ALL"]
+labels = ["Hello", "World", "Makie.jl"]
 add_row_labels!(fig, labels, fontsize=20, gap=5)
 
 labels = ["scale = 1", "scale = 2", "scale = 3", "scale = 4"]
 add_col_labels!(fig, labels, fontsize=20, gap=5)
 
-# add a title for this figure
+# Title
 Label(fig[-1, :], "MakieLayers.imagesc (λ, °C, m³ s⁻¹)", font=:bold, fontsize=32, color=:blue)
 rowgap!(fig.layout, 1, 5)
 fig
