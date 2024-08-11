@@ -119,12 +119,13 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   rowgap!(fig.layout, gap[1])
   colgap!(fig.layout, gap[2])
 
+  cbar = nothing
   # unify the legend
   if colorrange != automatic && !force_show_legend
-    Colorbar(fig[1:nrow, ncol+1], plts[1]; width=cbar_width, kw_cbar...)
+    cbar = Colorbar(fig[1:nrow, ncol+1], plts[1]; width=cbar_width, kw_cbar...)
     set_colgap(fig, ncol, gap[3])
   end
-  axs, plts
+  axs, plts, cbar
 end
 
 set_colgap(fig::Figure, j, gap) = colgap!(fig.layout, j, gap)
