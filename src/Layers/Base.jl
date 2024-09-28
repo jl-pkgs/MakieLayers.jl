@@ -1,6 +1,7 @@
 export gap!
 export bind_text!, bind_z!, add_labels!, text_rel!
 export rm_ticks!, non_label_ticks
+export set_lims!
 
 
 function Base.size(fig::Figure)
@@ -29,6 +30,12 @@ function bind_z!(plts::Vector, z::Observable{<:AbstractArray{<:Real,3}})
   end
 end
 
+function set_lims!(axs::Vector, xlim=(70, 140), ylim=(15, 55))
+  for ax in axs
+    xlims!(ax, xlim)
+    ylims!(ax, ylim)
+  end
+end
 
 non_label_ticks(ticks) = (ticks, ["" for i in ticks])
 

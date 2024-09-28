@@ -47,11 +47,13 @@ map_on_keyboard = map_on_keyboard_lr
 # end
 
 """
-    map_on_mouse(fig, ax, handle_plot, slon, slat)
+    map_on_mouse(ax, slon::Observable, slat::Observable; verbose=false, (fun!)=nothing, kw...)
+    map_on_mouse(ax, spoint::Observable; verbose=false, (fun!)=nothing, kw...)
 
-- `fun`: 只接受两个参数，其他需要放在`kw...`。
+# Arguments
+- `fun!`: `fun!(slon, slat; kw...)` or `fun!(spoint; kw...)`
 """
-function map_on_mouse(ax, slon, slat;
+function map_on_mouse(ax, slon::Observable, slat::Observable;
   verbose=false, (fun!)=nothing, kw...)
 
   on(events(ax).mousebutton, priority=2) do event
@@ -79,5 +81,28 @@ function map_on_mouse(ax, slon, slat;
   end
 end
 
+
+function map_on_mouse(ax, spoint::Observable;
+  verbose=false, (fun!)=nothing, kw...)
+
+  on(events(ax).mousebutton, priority=2) do event
+    if event.button == Mouse.left && event.action == Mouse.press
+      pos = mouseposition(ax)
+      xlim = ax.xaxis.attributes.limits[]
+      ylim = ax.yaxis.attributes.limits[]
+
+      if !((xlim[1] <= pos[1] <= xlim[2]) && (ylim[1] <= pos[2] <= ylim[2]))
+        return Consume(false)
+      end
+      spoint[] = pos[1], pos[2]
+
+      verbose && @show spoint
+      if (fun!) !== nothing
+        fun!(spoint[]; kw...)
+      end
+    end
+    return Consume(false)
+  end
+end
 
 export map_on_keyboard_lr, map_on_keyboard_ud, map_on_mouse
