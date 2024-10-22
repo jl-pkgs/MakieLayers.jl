@@ -1,3 +1,4 @@
+export set_colgap
 # TODO: add base maps foreach axis
 
 """
@@ -19,18 +20,20 @@ Heatmap with colorbar
   range is determined by the minimum and maximum values of `z`. If `colorrange`
   is a tuple `(vmin, vmax)`, the range is set to `[vmin, vmax]`.
 - `force_show_legend`: if `true`, the colorbar is always shown.
-- `col_rev`: if `true`, the colormap is reversed.
-- `colors`: the colormap. It can be a string or a vector of colors.
-- `kw...`: other keyword arguments passed to `heatmap!`
-- `kw_axis`: other keyword arguments passed to `Axis`
-- `fun_axis` used to tidy axis
+- `col_rev`  : if `true`, the colormap is reversed.
+- `colors`   : the colormap. It can be a string or a vector of colors.
+- `kw...`    : other keyword arguments passed to `heatmap!`
+- `kw_axis`  : other keyword arguments passed to `Axis`
+- `fun_axis` : used to tidy axis
+- `cgap`     : the gap between the colorbar and the plot (default is 5)
+- `gap`      : the gap between subplots (default is [10, 10])
 
 # Examples
 ```julia
 imagesc(rand(10, 10))
 ```
 """
-function imagesc!(ax::Axis, x, y, z::Union{R,Observable{R}};
+function _imagesc(ax::Axis, x, y, z::Union{R,Observable{R}};
   colorrange=automatic, col_rev=false, colors=amwg256,
   fact=nothing, kw...) where {R<:AbstractArray{<:Real,2}}
 
@@ -53,14 +56,21 @@ end
 
 function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   x, y, z::Union{R,Observable{R}};
-  title="Plot",
+  title="",
   force_show_legend=false,
-  colorrange=automatic, kw_axis=(;), kw...) where {R<:AbstractArray{<:Real,2}}
+  colorrange=automatic,
+  axis=(;),
+  colorbar=(; width=20),
+  cgap=5,
+  kw...) where {R<:AbstractArray{<:Real,2}}
+  
+  ax = Axis(fig[1, 1]; title, axis...)
+  plt = _imagesc(ax, x, y, z; colorrange, kw...)
 
-  ax = Axis(fig[1, 1]; title, kw_axis...)
-  plt = imagesc!(ax, x, y, z; colorrange, kw...)
-
-  (colorrange == automatic || force_show_legend) && Colorbar(fig[1, 2], plt)
+  if (colorrange == automatic || force_show_legend) 
+    Colorbar(fig[1, 2], plt; colorbar...)
+    !isnothing(cgap) && set_colgap(fig, 1, cgap)
+  end
   ax, plt
 end
 
@@ -69,14 +79,15 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   x, y, z::Union{R,Observable{R}};
   colorrange=automatic, force_show_legend=false,
   layout=nothing,
-  titles=nothing, colors=amwg256, gap=10,
-  kw_cbar=(;),
-  cbar_width=15,
+  titles=nothing, colors=amwg256, 
+  xlabel=nothing, ylabel=nothing, title=nothing,
+  gap=10, cgap=5, 
+  axis=(;), colorbar=(; width=15),
   fun_axis=nothing,
   byrow=false,
   kw...) where {R<:AbstractArray{<:Real,3}}
 
-  length(gap) == 1 && (gap = (gap, gap, 5))
+  length(gap) == 1 && (gap = (gap, gap))
   n = size(z, 3)
   if layout === nothing
     ncol = ceil(Int, sqrt(n))
@@ -90,7 +101,7 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   plts = []
 
   k = 0
-  inds = byrow ? CartesianIndices((1:ncol, 1:nrow)) : CartesianIndices((1:nrow, 1:ncol))  
+  inds = byrow ? CartesianIndices((1:ncol, 1:nrow)) : CartesianIndices((1:nrow, 1:ncol))
 
   for I in inds[1:n]
     if byrow
@@ -107,7 +118,8 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
       _z = z[:, :, k]
     end
     ax, plt = imagesc!(fig[i, j], x, y, _z;
-      title, colorrange, force_show_legend, colors, kw...)
+      title, colorrange, force_show_legend, colors, 
+      axis, colorbar, cgap, kw...)
     fun_axis !== nothing && fun_axis(ax)
     push!(axs, ax)
     push!(plts, plt)
@@ -122,16 +134,21 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   cbar = nothing
   # unify the legend
   if colorrange != automatic && !force_show_legend
-    cbar = Colorbar(fig[1:nrow, ncol+1], plts[1]; width=cbar_width, kw_cbar...)
-    set_colgap(fig, ncol, gap[3])
+    cbar = Colorbar(fig[1:nrow, ncol+1], plts[1]; colorbar...)
+    set_colgap(fig, ncol, cgap)
   end
   axs, plts, cbar
 end
 
 set_colgap(fig::Figure, j, gap) = colgap!(fig.layout, j, gap)
 function set_colgap(fig::GridPosition, j, gap)
-  layout = fig.layout.content[1].content
-  colgap!(layout, j, gap)
+  contents = fig.layout.content
+  # for i in 1:length(contents)
+    _content = contents[end].content
+    colgap!(_content, j, gap)
+  # end
+  # layout = fig.layout.content[1].content
+  # colgap!(layout, j, gap)
 end
 
 function imagesc!(fig, z; kw...)
@@ -142,6 +159,6 @@ end
 
 function imagesc(x, args...; kw...)
   fig = Figure()
-  imagesc!(fig, x, args...; kw...)
+  R = imagesc!(fig, x, args...; kw...)
   fig
 end

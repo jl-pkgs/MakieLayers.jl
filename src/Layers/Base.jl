@@ -1,8 +1,10 @@
 export gap!
 export bind_text!, bind_z!, add_labels!, text_rel!
-export rm_ticks!, non_label_ticks
+export rm_ticks!, non_label_ticks, format_ticks
 export set_lims!
 
+
+format_ticks(ticks) = collect(ticks), string.(ticks)
 
 function Base.size(fig::Figure)
   m, n = collect(fig.scene.viewport[].widths)

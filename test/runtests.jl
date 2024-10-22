@@ -1,9 +1,7 @@
-using Test
-using Dates
-using MakieLayers
-using CairoMakie
-# using GLMakie
+include("main_pkgs.jl")
 
+include("test-colorbar.jl")
+include("test-colors.jl")
 
 @testset "dateseries" begin
   ## good job, test passed
@@ -39,7 +37,7 @@ end
   @test_nowarn imagesc(x, y, rand(10, 10, 4))
 
   fig = Figure(; size = (800, 800))
-  @test_nowarn imagesc!(fig, x, y, rand(10, 10, 4), colorrange=(0, 1), kw_cbar=(;width=45))
+  @test_nowarn imagesc!(fig, x, y, rand(10, 10, 4), colorrange=(0, 1), colorbar=(;width=45))
   add_row_labels!(fig, ["(a)", "(b)"])
   add_col_labels!(fig, ["1", "2"])
   fig
