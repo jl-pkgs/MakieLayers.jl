@@ -2,14 +2,12 @@ import Makie: plot!, plot, @recipe, @extract, xlims!
 import Makie: Series
 
 using PlotUtils: optimize_ticks, optimize_datetime_ticks
-date2num = datetime2unix
 
 # datetime2julian, datetime2rata, datetime2unix
 function get_date_ticks(dates; fmt="mm/dd")
   dateticks = optimize_ticks(dates[1], dates[end])[1]
   (date2num.(dateticks), Dates.format.(dateticks, fmt))
 end
-
 # ## How to update ticks for Dates
 # function get_ticks(t::AbstractVector{DateTime}, any_scale, ::Automatic, vmin, vmax; kw...)
 #   get_date_ticks(t; kw...)
