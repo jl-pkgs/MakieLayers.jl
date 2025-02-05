@@ -15,6 +15,9 @@ include("Layers/Layers.jl")
 include("events.jl")
 include("colormap.jl")
 include("theme.jl")
-include("Shapefile.jl")
+# include("Shapefile.jl")
+# function read_sf end
+# function plot_poly! end
+# export read_sf, plot_poly!
 
 end # module MakieLayers
