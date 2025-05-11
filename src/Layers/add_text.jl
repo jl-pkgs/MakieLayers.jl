@@ -10,7 +10,7 @@ end
 """
 - space: `:relative` or `:data`
 """
-function add_texts!(axs::Vector, labels::Observable, x = 0, y = 1;
+function add_text!(axs::Vector, labels::Observable, x = 0, y = 1;
   fontsize=30, align=(-0.1, 1.1), space = :relative, kw...)
   plts = []
   for i in eachindex(axs)
@@ -22,9 +22,10 @@ function add_texts!(axs::Vector, labels::Observable, x = 0, y = 1;
 end
 
 # add_texts!(axs, labels, 0, 1; )
-function add_texts!(axs::Vector, labels::Vector, x = 0, y = 1; kw...)
-  add_texts!(axs, Observable(labels), x, y; kw...)
+function add_text!(axs::Vector, labels::Vector, x = 0, y = 1; kw...)
+  add_text!(axs, Observable(labels), x, y; kw...)
 end
 
 
-export add_texts!
+add_texts! = add_text!
+export add_text!, add_texts!
