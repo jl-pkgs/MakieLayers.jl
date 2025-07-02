@@ -12,7 +12,7 @@ PlotUtils = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
 [compat]
-Colors = "0.12, 0.13"
+Colors = "0.13, 0.14"
 ColorSchemes = "3"
 Makie = "0.22, 0.23"
 PlotUtils = "1"

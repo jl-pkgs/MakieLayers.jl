@@ -60,17 +60,20 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   force_show_legend=false,
   colorrange=automatic,
   axis=(;),
+  fun_axis=nothing,
   colorbar=(; width=20),
   cgap=5,
   kw...) where {R<:AbstractArray{<:Real,2}}
-  
+
   ax = Axis(fig[1, 1]; title, axis...)
   plt = _imagesc(ax, x, y, z; colorrange, kw...)
 
-  if (colorrange == automatic || force_show_legend) 
+  if (colorrange == automatic || force_show_legend)
     Colorbar(fig[1, 2], plt; colorbar...)
     !isnothing(cgap) && set_colgap(fig, 1, cgap)
   end
+  !isnothing(fun_axis) && (fun_axis(ax))
+
   ax, plt
 end
 
@@ -79,9 +82,9 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   x, y, z::Union{R,Observable{R}};
   colorrange=automatic, force_show_legend=false,
   layout=nothing,
-  titles=nothing, colors=amwg256, 
+  titles=nothing, colors=amwg256,
   xlabel=nothing, ylabel=nothing, title=nothing,
-  gap=10, cgap=5, 
+  gap=10, cgap=5,
   axis=(;), colorbar=(; width=15),
   fun_axis=nothing,
   byrow=false,
@@ -118,9 +121,9 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
       _z = z[:, :, k]
     end
     ax, plt = imagesc!(fig[i, j], x, y, _z;
-      title, colorrange, force_show_legend, colors, 
-      axis, colorbar, cgap, kw...)
-    fun_axis !== nothing && fun_axis(ax)
+      title, colorrange, force_show_legend, colors,
+      axis, fun_axis, colorbar, cgap, kw...)
+    # fun_axis !== nothing && fun_axis(ax)
     push!(axs, ax)
     push!(plts, plt)
   end
@@ -140,12 +143,19 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   axs, plts, cbar
 end
 
+function set_colgap(fig::GridSubposition, j, gap)
+  # contents = fig.parent.layout.content
+  # _content = contents[end].content
+  # colgap!(_content, j, gap)
+end
+
 set_colgap(fig::Figure, j, gap) = colgap!(fig.layout, j, gap)
+
 function set_colgap(fig::GridPosition, j, gap)
   contents = fig.layout.content
   # for i in 1:length(contents)
-    _content = contents[end].content
-    colgap!(_content, j, gap)
+  _content = contents[end].content
+  colgap!(_content, j, gap)
   # end
   # layout = fig.layout.content[1].content
   # colgap!(layout, j, gap)
