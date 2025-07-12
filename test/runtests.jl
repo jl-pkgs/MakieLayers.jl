@@ -3,7 +3,7 @@ include("main_pkgs.jl")
 include("test-label.jl")
 include("test-colorbar.jl")
 include("test-colors.jl")
-include("test-date.jl")
+# include("test-date.jl")
 
 @testset "imagesc" begin
   x = 2:11

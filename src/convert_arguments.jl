@@ -4,8 +4,6 @@ import Makie: replace_missing, convert_arguments, convert_single_argument,
   get_ticks, Automatic
 
 date2num = Makie.date_to_number
-# Makie.convert_single_argument(dates::AbstractVector{<:TypeDate}) = date2num.(dates)
-# Makie.convert_single_argument(date::TypeDate) = date2num(date) |> Float32
 
 function Makie.convert_arguments(T::PointBased,
   x::Union{TypeDate,AbstractVector{<:TypeDate}}, args...)
@@ -41,6 +39,12 @@ import Makie: DimConversions, NoDimConversion, DateTimeConversion
 
 Makie.convert_single_argument(dates::AbstractVector{Dates.AbstractTime}) = date_to_number.(dates)
 Makie.convert_single_argument(date::DateTime) = date_to_number(date)
+
+
+Makie.convert_single_argument(dates::AbstractVector{<:TypeDate}) = date2num.(dates)
+
+Makie.convert_single_argument(date::TypeDate) = date2num(date) |> Float32
+
 
 function Base.setindex!(conversions::DimConversions, value::DateTimeConversion, i::Int)
   isnothing(value) && return nothing # ignore no conversions

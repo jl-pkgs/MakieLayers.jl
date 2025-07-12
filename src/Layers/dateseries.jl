@@ -33,7 +33,7 @@ Makie.convert_arguments(::Type{<:DateSeries}, args...) = convert_arguments(Serie
 
 function plot!(p::DateSeries)
   curves = p[1]
-  series!(p, curves; p.attributes...)
+  series!(p, curves)
 end
 
 # `get_plots`用于生成legend

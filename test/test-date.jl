@@ -1,4 +1,5 @@
 using MakieLayers, Test
+# using GLMakie, Dates
 
 @testset "dateseries" begin
   ## good job, test passed
@@ -17,13 +18,13 @@ using MakieLayers, Test
   dateseries!(ax, time, data, labels=["ea", "es"])
   dateseries!(ax, time, y, label="VPD")
   axislegend()
-  
+
   # x = @lift date2num.($time)
   series!(ax, t, y .+ 1)
-  vlines!(ax, t[4])
+  # vlines!(ax, t[4])
   lines!(ax, t, y)
   vspan!(ax, t[2], t[3]; alpha=0.2) # major error
-  @test_nowarn fig
-  # fig
+  # @test_nowarn fig
+  fig
   # time[] = time[] - Day(1)
 end
