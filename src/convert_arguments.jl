@@ -3,7 +3,7 @@ export date2num
 
 using Dates
 import Makie: replace_missing, convert_arguments, convert_single_argument,
-  get_ticks, Automatic
+  get_ticks
 import Makie: filtered_attributes
 
 function date2num(x::T) where {T<:TypeDate}

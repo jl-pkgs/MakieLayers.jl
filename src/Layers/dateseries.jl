@@ -1,26 +1,17 @@
-import Makie: plot!, plot, @recipe, @extract, xlims!
-import Makie: Series
+import Makie: plot, plot!, @recipe, xlims!
+using PlotUtils: optimize_ticks
 
-using PlotUtils: optimize_ticks, optimize_datetime_ticks
-
-# datetime2julian, datetime2rata, datetime2unix
 function get_date_ticks(dates; fmt="mm/dd")
   dateticks = optimize_ticks(dates[1], dates[end])[1]
   (date2num.(dateticks), Dates.format.(dateticks, fmt))
 end
-# ## How to update ticks for Dates
-# function get_ticks(t::AbstractVector{DateTime}, any_scale, ::Automatic, vmin, vmax; kw...)
-#   get_date_ticks(t; kw...)
-# end
 
 function set_date_ticks!(ax, t::AbstractVector{<:TypeDate};
   date_format="yy/mm/dd")
-
-  xlims = date2num.(extrema(t))
-  xlims!(ax, xlims)
-  ## update ticks and xticklabels
-  xticks = get_date_ticks(t; fmt=date_format)
-  ax.xticks[] = xticks
+  # xlims = date2num.(extrema(t))
+  # xlims!(ax, xlims)
+  # Don't call xlims! — let Makie auto-compute limits from all plots on the axis
+  ax.xticks[] = get_date_ticks(t; fmt=date_format)
 end
 
 ## layer: dateseries! ----------------------------------------------------------
@@ -30,7 +21,7 @@ end
 
 Makie.convert_arguments(::Type{<:DateSeries}, args...) = convert_arguments(Series, args...)
 
-function plot!(p::DateSeries)
+function Makie.plot!(p::DateSeries)
   curves = p[1]
   series!(p, curves)
 end
