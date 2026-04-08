@@ -24,9 +24,8 @@ function set_date_ticks!(ax, t::AbstractVector{<:TypeDate};
 end
 
 ## layer: dateseries! ----------------------------------------------------------
-@recipe(DateSeries, curves) do scene
-  attrs = default_theme(scene, Series)
-  return Attributes(; attrs...)
+@recipe DateSeries (curves::AbstractVector{<:AbstractVector{<:Point2}},) begin
+  filtered_attributes(Series)...
 end
 
 Makie.convert_arguments(::Type{<:DateSeries}, args...) = convert_arguments(Series, args...)
