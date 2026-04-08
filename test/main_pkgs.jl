@@ -1,3 +1,3 @@
-using GLMakie, MakieLayers
-# using CairoMakie, MakieLayers
+# using GLMakie, MakieLayers
+using CairoMakie, MakieLayers
 using Test, Dates

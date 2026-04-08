@@ -87,7 +87,7 @@ function imagesc!(fig::Union{Figure,GridPosition,GridSubposition},
   gap=10, cgap=5,
   axis=(;), colorbar=(; width=15),
   fun_axis=nothing,
-  byrow=false,
+  byrow=true,
   kw...) where {R<:AbstractArray{<:Real,3}}
 
   length(gap) == 1 && (gap = (gap, gap))
