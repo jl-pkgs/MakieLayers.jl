@@ -6,3 +6,7 @@ shp
 
 scripts
 example
+dev
+backup
+
+*.png
