@@ -2,10 +2,8 @@ module MakieLayers
 
 
 export automatic
-export map_on_keyboard, map_on_mouse
 export my_theme!
-export date2num, get_date_ticks
-export vlines_date!, vspan_date!
+export date2num, get_date_ticks, vlines_date!, vspan_date!
 
 
 using Makie

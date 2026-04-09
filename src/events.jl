@@ -1,7 +1,7 @@
 """
-  map_on_keyboard(fig, stime)
+  event_keyboard_lr(fig, stime)
 """
-function map_on_keyboard_lr(fig, stime::Slider, Δ::Integer=1)
+function event_keyboard_lr(fig, stime::Slider, Δ::Integer=1)
   on(events(fig).keyboardbutton) do event
     if event.action == Keyboard.press || event.action == Keyboard.repeat
       if event.key == Keyboard.right
@@ -14,7 +14,7 @@ function map_on_keyboard_lr(fig, stime::Slider, Δ::Integer=1)
   end
 end
 
-function map_on_keyboard_ud(fig, stime::Slider, Δ::Integer=1)
+function event_keyboard_ud(fig, stime::Slider, Δ::Integer=1)
   on(events(fig).keyboardbutton) do event
     if event.action == Keyboard.press || event.action == Keyboard.repeat
       if event.key == Keyboard.down
@@ -27,7 +27,7 @@ function map_on_keyboard_ud(fig, stime::Slider, Δ::Integer=1)
   end
 end
 
-map_on_keyboard = map_on_keyboard_lr
+map_on_keyboard = event_keyboard_lr
 
 # @show event.key
 # if event.key == Keyboard.up
@@ -47,62 +47,34 @@ map_on_keyboard = map_on_keyboard_lr
 # end
 
 """
-    map_on_mouse(ax, slon::Observable, slat::Observable; verbose=false, (fun!)=nothing, kw...)
-    map_on_mouse(ax, spoint::Observable; verbose=false, (fun!)=nothing, kw...)
+    event_click_point(ax, spoint::Observable; verbose=false, (fun!)=nothing, kw...)
 
 # Arguments
 - `fun!`: `fun!(slon, slat; kw...)` or `fun!(spoint; kw...)`
 """
-function map_on_mouse(ax, slon::Observable, slat::Observable;
-  verbose=false, (fun!)=nothing, kw...)
-
-  on(events(ax).mousebutton, priority=2) do event
-    if event.button == Mouse.left && event.action == Mouse.press
-      # plt, i = pick(ax)
-      pos = mouseposition(ax)
-      # 如果不在axis范围内
-      xlim = ax.xaxis.attributes.limits[]
-      ylim = ax.yaxis.attributes.limits[]
-      # xlim, ylim = ax.limits[]
-      # if !isnothing(xlim) && !isnothing(ylim)
-
-      if !((xlim[1] <= pos[1] <= xlim[2]) && (ylim[1] <= pos[2] <= ylim[2]))
-        return Consume(false)
-      end
-      slon[] = pos[1]
-      slat[] = pos[2]
-
-      verbose && @show slon[], slat[]
-      if (fun!) !== nothing
-        fun!(slon[], slat[]; kw...)
-      end
-    end
-    return Consume(false)
-  end
-end
-
-
-function map_on_mouse(ax, spoint::Observable;
-  verbose=false, (fun!)=nothing, kw...)
-
-  on(events(ax).mousebutton, priority=2) do event
+function event_click_point(ax, spoint::Observable; verbose=false, (fun!)=nothing, kw...)
+  on(events(ax).mousebutton, priority=1) do event
     if event.button == Mouse.left && event.action == Mouse.press
       pos = mouseposition(ax)
-      xlim = ax.xaxis.attributes.limits[]
-      ylim = ax.yaxis.attributes.limits[]
-
-      if !((xlim[1] <= pos[1] <= xlim[2]) && (ylim[1] <= pos[2] <= ylim[2]))
+      lims = ax.finallimits[]
+      xmin, ymin = lims.origin
+      xmax, ymax = xmin + lims.widths[1], ymin + lims.widths[2]
+      if !((xmin <= pos[1] <= xmax) && (ymin <= pos[2] <= ymax))
         return Consume(false)
       end
       spoint[] = pos[1], pos[2]
 
-      verbose && @show spoint
+      verbose && @show spoint[]
       if (fun!) !== nothing
-        fun!(spoint[]; kw...)
+        fun!(spoint; kw...) # 传递ref, 以便fun!修改spoint
       end
     end
     return Consume(false)
   end
 end
 
-export map_on_keyboard_lr, map_on_keyboard_ud, map_on_mouse
+map_on_mouse = event_click_point # old name, to avoid breaking existing code
+
+
+export map_on_mouse, map_on_keyboard
+export event_keyboard_lr, event_keyboard_ud, event_click_point
